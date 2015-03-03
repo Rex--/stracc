@@ -1,6 +1,6 @@
 FROM debian:stable
 
-CMD ["apt-get", "update"]
+CMD ["/bin/bash", "apt-get", "update"]
 RUN apt-get -y install pip
 
 RUN pip install flask tornado dataset
