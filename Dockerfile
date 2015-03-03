@@ -1,8 +1,7 @@
-FROM  debian:stable
+FROM debian
 
-RUN   apt-get -y install pip
-
-RUN   pip install flask tornado dataset
+RUN apt-get update && apt-get -y install pip
+RUN pip install flask tornado dataset
 
 ADD stracc.py /stracc/
 RUN mkdir /stracc/db
