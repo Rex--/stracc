@@ -1,6 +1,7 @@
 FROM debian:stable
 
-RUN apt-get update && apt-get install pip
+RUN apt-get update
+RUN apt-get install -y pip
 
 RUN pip install flask tornado dataset
 
