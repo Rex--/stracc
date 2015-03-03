@@ -9,4 +9,4 @@ RUN mkdir -pv /src/stracc/db/
 
 EXPOSE 3160
 
-CMD ["python", "/stracc/stracc.py"]
+CMD ["python", "/src/stracc/stracc.py"]
