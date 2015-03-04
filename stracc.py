@@ -99,6 +99,12 @@ def postTestDelete():
     saveDbTabletoJson()
     return flask.json.jsonify(success='true'), 200
 
+# Fucking browsers cant use favicons right >:|
+@app.route('/favicon.ico')
+def faviconGet():
+    favicon = open('web-assets/images/sugar.ico', 'r')
+    return favicon.read()
+
 if not os.path.exists('db'):
     os.mkdir('db')
 
