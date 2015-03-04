@@ -8,4 +8,6 @@ ADD . /src/stracc
 
 EXPOSE 3160
 
-CMD ["python", "/src/stracc/stracc.py"]
+WORKDIR /src/stracc
+
+CMD ["python", "stracc.py"]
