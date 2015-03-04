@@ -5,7 +5,6 @@ RUN pip install flask tornado dataset
 
 RUN mkdir -pv /src/stracc
 ADD stracc.py /src/stracc/stracc.py
-RUN mkdir -pv /src/stracc/db/
 
 EXPOSE 3160
 

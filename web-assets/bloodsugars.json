@@ -1,0 +1,48 @@
+{
+  "count": -1, 
+  "meta": {}, 
+  "results": [
+    {
+      "id": 1, 
+      "bloodsugar": "204", 
+      "med": "none", 
+      "time": "9:15"
+    }, 
+    {
+      "id": 2, 
+      "bloodsugar": "204", 
+      "med": "none", 
+      "time": "9:15"
+    }, 
+    {
+      "id": 3, 
+      "bloodsugar": "204", 
+      "med": "none", 
+      "time": "9:15"
+    }, 
+    {
+      "id": 4, 
+      "bloodsugar": "204", 
+      "med": "none", 
+      "time": "9:15"
+    }, 
+    {
+      "id": 5, 
+      "bloodsugar": "207", 
+      "med": "none", 
+      "time": "9:15"
+    }, 
+    {
+      "id": 6, 
+      "bloodsugar": "237", 
+      "med": "none", 
+      "time": "9:15"
+    }, 
+    {
+      "id": 7, 
+      "bloodsugar": "267", 
+      "med": "none", 
+      "time": "9:15"
+    }
+  ]
+}
