@@ -99,6 +99,13 @@ def postTestDelete():
     saveDbTabletoJson()
     return flask.json.jsonify(success='true'), 200
 
+# Returns total number of bloodsugar datapoints in the db
+@app.route('/test/total', methods=['POST'])
+def totalData():
+    db = dataset.connect('sqlite:///db/bloodsugars.db')
+    return flask.json.jsonify(total=len(db['bloodsugars']))
+
+
 # Fucking browsers cant use favicons right >:|
 @app.route('/favicon.ico')
 def faviconGet():
