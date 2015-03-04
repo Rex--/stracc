@@ -11,7 +11,8 @@ require(["web-assets/Chartjs/Chart.min.js", "requirejs/text!bloodsugars.json"], 
       {
       label: "Diabetes",
       strokeColor: 'rgb(0, 0, 0)',
-      data: []
+      data: [],
+      error: []
       }
     ]
   };
@@ -28,10 +29,16 @@ require(["web-assets/Chartjs/Chart.min.js", "requirejs/text!bloodsugars.json"], 
   for(var i = 0; i < sugarTable.length; i++) {
       var bloodsugar = parseInt(sugarTable[i]['bloodsugar']);
       var time = sugarTable[i]['time'];
+      var med = sugarTable[i]['med'];
+      if(med == 'none') {
+        med = 0;
+      }
       // add time datapoint to the chart
       data.labels.push(time);
       // add blood sugar datapoint to the chart
       data.datasets[0].data.push(bloodsugar);
+      // add medication error bar to the chart
+      data.datasets[0].error.push(parseInt(med));
   }
 
   var ctx = document.getElementById("DiabetesChart").getContext("2d");
