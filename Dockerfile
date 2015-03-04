@@ -4,7 +4,7 @@ RUN apt-get update && apt-get -y install python-pip
 RUN pip install flask tornado dataset
 
 RUN mkdir -pv /src/stracc
-ADD stracc.py /src/stracc/stracc.py
+ADD . /src/stracc
 
 EXPOSE 3160
 
