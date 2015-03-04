@@ -102,7 +102,7 @@ def postTestDelete():
 # Fucking browsers cant use favicons right >:|
 @app.route('/favicon.ico')
 def faviconGet():
-    favicon = open('web-assets/images/sugar.ico', 'r')
+    favicon = open('web-assets/images/sugar.ico', 'rb')
     return favicon.read()
 
 if not os.path.exists('db'):
