@@ -4,19 +4,15 @@ from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 import dataset
 import os
+from datetime import datetime
 
 app = flask.Flask(__name__)
 
 
-def recordBStoDB(bs, t, m="none"):
+def recordBStoDB(bs, t, d, m="none"):
     db = dataset.connect("sqlite:///db/bloodsugars.db")
     table = db['bloodsugars']
-    table.insert(dict(bloodsugar=bs, time=t, med=m))
-
-def saveDbTabletoJson():
-    db = dataset.connect('sqlite:///db/bloodsugars.db')
-    dbtable = db['bloodsugars']
-    dataset.freeze(dbtable, format="json", filename="web-assets/bloodsugars.json")
+    table.insert(dict(bloodsugar=bs, time=t, date=d, med=m))
 
 def deleteBSfromDB(id):
     db = dataset.connect('sqlite:///db/bloodsugars.db')
@@ -25,6 +21,24 @@ def deleteBSfromDB(id):
         dbtable.delete(id=id)
     else:
         dbtable.delete()
+
+def saveDB():
+    db = dataset.connect('sqlite:///db/bloodsugars.db')
+    dbtable = db['bloodsugars']
+    dataset.freeze(dbtable, format="json", filename="web-assets/chart-data/all/bloodsugars.json")
+
+    # start and end are date strings in format m/d/y
+    #  filepath is a string to the output file.json
+def saveDatesDB(start, end, file):
+    dateFormat = '%m/%d/%Y'
+    startDate = datetime.strptime(start, dateFormat)
+    endDate = datetime.strptime(end, dateFormat)
+    span = endDate - startDate
+    print span
+    date = start
+    for day in range(span.days):
+        print day
+
 
 # Main bloodsugar graph
 #   Serves chart.js chart.
@@ -47,11 +61,14 @@ def postBloodSugar():
         req = flask.request.get_json()
         bS = req['bloodsugar']
         time = req['time']
+        date = req['date']
         med = req['med']
     except KeyError as err:
         return flask.json.jsonify(error = "Bad request"), 400
-    recordBStoDB(bS, time, med)
-    saveDbTabletoJson()
+    if date == 'today':
+        date = datetime.date.today()
+    recordBStoDB(bS, time, date, med)
+    saveDB()
     return flask.json.jsonify(success="true"), 200
 
 # Gets multiple blood sugar test and adds each one to the db.
@@ -61,13 +78,14 @@ def postMultipleBloodSugar():
         req = flask.request.get_json()
         sugars = req['bloodsugars']
         times = req['times']
+        dates = req['dates']
         meds = req['meds']
     except KeyError:
         return flask.json.jsonify(error = 'Bad request'), 400
 
     for i in range(len(sugars)):
-        recordBStoDB(sugars[i], times[i], meds[i])
-    saveDbTabletoJson()
+        recordBStoDB(sugars[i], times[i], dates[i], meds[i])
+    saveDB()
     return flask.json.jsonify(success = 'true'), 200
 
 # Accepts a json db and replaces it with the current one.
@@ -84,7 +102,7 @@ def updateDB():
     for bs in results:
         recordBStoDB(bs['bloodsugar'], bs['time'], bs['med'])
 
-    saveDbTabletoJson()
+    saveDB()
     return flask.json.jsonify(success = 'true'), 200
 
 # Deletes the data entry with 'id'
@@ -96,7 +114,7 @@ def postTestDelete():
     except KeyError:
         return flask.json.jsonify(error = 'Bad request'), 400
     deleteBSfromDB(bsid)
-    saveDbTabletoJson()
+    saveDB()
     return flask.json.jsonify(success='true'), 200
 
 # Returns total number of bloodsugar datapoints in the db
