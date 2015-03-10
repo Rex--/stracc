@@ -70,6 +70,8 @@ class Database:
             if weekYear == None:
                 weekYear = datetime.today().strftime('%Y')
             dateObj = datetime.strptime('0'+'/'+weekNum+'/'+weekYear, '%w/%U/%Y')
+        else:
+            dateObj = datetime.today().strftime(self._date_format)
         dateYear = dateObj.strftime('%Y')
         dateMonth = dateObj.strftime('%B')
         dateWeek = dateObj.strftime('%U')
@@ -90,6 +92,7 @@ class Database:
             }
             with open(dataFilePath, 'w') as dataFile:
                 json.dump(skelly, dataFile, indent=2)
+        return dataFilePath
 
     # To be called if the data is not the latest or for safety
     #   This function is slower than addNewData, but is safer.
@@ -98,12 +101,12 @@ class Database:
     # dtype = type of data (tests or shots)
     # data = a string of the data to be stored.
     def addData(self, date, time, dtype, data):
-        if date == 'now':
+        if str(date) == 'today':
             date = datetime.today().strftime(self._date_format)
-        if time == 'now':
+        if str(time) == 'now':
             time = datetime.now().strftime(self._time_format)
         dateObj = datetime.strptime(date, self._date_format)
-        self.__touchDataFile(date)
+        dataFilePath = self.__touchDataFile(date)
         dataFile = open(dataFilePath, 'r+')
         dataFileString = dataFile.read()    # Read db file
         dataFile.seek(0)    # Insert cursor at the beginning of the file
@@ -147,19 +150,16 @@ class Database:
     # A call with no arguments returns this week.
     def getWeek(self, date=None, weekNum=None, weekYear=None):
         if date != None:
-            self.__touchDataFile(date=date)
+            dataFilePath = self.__touchDataFile(date=date)
             dateObj = datetime.strptime(date, self._date_format)
         elif weekNum != None:
             if weekYear == None:
                 weekYear = datetime.today().strftime('%Y')
-            self.__touchDataFile(weekNum=weekNum, weekYear=weekYear)
+            dataFilePath = self.__touchDataFile(weekNum=weekNum, weekYear=weekYear)
             dateObj = datetime.strptime('0'+'/'+weekNum+'/'+weekYear, '%w/%U/%Y')
         else:
             dateObj = datetime.today()
-        dateYear = dateObj.strftime('%Y')
-        dateMonth = dateObj.strftime('%B')
-        dateWeek = dateObj.strftime('%U')
-        dataFilePath = os.path.join(self._path_to_db, dateYear, dateMonth, dateWeek + '.json')
+            dataFilePath = self.__touchDataFile()
         dataFile = open(dataFilePath, 'r')
         dataFileString = dataFile.read()
         return json.loads(dataFileString)

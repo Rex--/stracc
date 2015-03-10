@@ -2,43 +2,20 @@ import flask
 from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
-import dataset
+import database
 import os
-from datetime import datetime
 
 app = flask.Flask(__name__)
 
 
-def recordBStoDB(bs, t, d, m="none"):
-    db = dataset.connect("sqlite:///db/bloodsugars.db")
-    table = db['bloodsugars']
-    table.insert(dict(bloodsugar=bs, time=t, date=d, med=m))
+def recordBS(bloodsugar, time='now', date='today'):
+    db.addData(date, time, 'tests', bloodsugar)
+
+def recordShot(shot, time='now', date='today'):
+    db.addData(date, time, 'shots', shot)
 
 def deleteBSfromDB(id):
-    db = dataset.connect('sqlite:///db/bloodsugars.db')
-    dbtable = db['bloodsugars']
-    if id != 'all':
-        dbtable.delete(id=id)
-    else:
-        dbtable.delete()
-
-def saveDB():
-    db = dataset.connect('sqlite:///db/bloodsugars.db')
-    dbtable = db['bloodsugars']
-    dataset.freeze(dbtable, format="json", filename="web-assets/chart-data/all/bloodsugars.json")
-
-    # start and end are date strings in format m/d/y
-    #  filepath is a string to the output file.json
-def saveDatesDB(start, end, file):
-    dateFormat = '%m/%d/%Y'
-    startDate = datetime.strptime(start, dateFormat)
-    endDate = datetime.strptime(end, dateFormat)
-    span = endDate - startDate
-    print span
-    date = start
-    for day in range(span.days):
-        print day
-
+    print 'Feature not implemented..(Yet!)'
 
 # Main bloodsugar graph
 #   Serves chart.js chart.
@@ -62,13 +39,9 @@ def postBloodSugar():
         bS = req['bloodsugar']
         time = req['time']
         date = req['date']
-        med = req['med']
     except KeyError as err:
         return flask.json.jsonify(error = "Bad request"), 400
-    if date == 'today':
-        date = datetime.date.today()
-    recordBStoDB(bS, time, date, med)
-    saveDB()
+    recordBS(bS, time, date)
     return flask.json.jsonify(success="true"), 200
 
 # Gets multiple blood sugar test and adds each one to the db.
@@ -79,50 +52,39 @@ def postMultipleBloodSugar():
         sugars = req['bloodsugars']
         times = req['times']
         dates = req['dates']
-        meds = req['meds']
     except KeyError:
         return flask.json.jsonify(error = 'Bad request'), 400
 
     for i in range(len(sugars)):
-        recordBStoDB(sugars[i], times[i], dates[i], meds[i])
-    saveDB()
+        recordBS(sugars[i], times[i], dates[i])
     return flask.json.jsonify(success = 'true'), 200
 
-# Accepts a json db and replaces it with the current one.
-@app.route('/test/updatedb', methods=['POST'])
-def updateDB():
+# Gets a shot and adds it to the database
+@app.route('/shot', methods=['POST'])
+def postShot():
     try:
         req = flask.request.get_json()
-        results = req['results']
+        shot = req['shot']
+        time = req['time']
+        date = req['date']
     except KeyError:
-        return flask.json.jsonify(error = 'Bad request'), 400
-
-    deleteBSfromDB('all')
-
-    for bs in results:
-        recordBStoDB(bs['bloodsugar'], bs['time'], bs['med'])
-
-    saveDB()
-    return flask.json.jsonify(success = 'true'), 200
-
-# Deletes the data entry with 'id'
-@app.route('/test/delete', methods=['POST'])
-def postTestDelete():
-    try:
-        req = flask.request.get_json()
-        bsid = int(req['id'])
-    except KeyError:
-        return flask.json.jsonify(error = 'Bad request'), 400
-    deleteBSfromDB(bsid)
-    saveDB()
+        return flask.json.jsonify(error = 'Bad Request'), 400
+    recordShot(shot, time, date)
     return flask.json.jsonify(success='true'), 200
 
-# Returns total number of bloodsugar datapoints in the db
-@app.route('/test/total', methods=['POST'])
-def totalData():
-    db = dataset.connect('sqlite:///db/bloodsugars.db')
-    return flask.json.jsonify(total=len(db['bloodsugars']))
+@app.route('/shot/multiple', methods=['POST'])
+def postMultipleShot():
+    try:
+        req = flask.request.get_json()
+        shots = req['shots']
+        times = req['times']
+        dates = req['dates']
+    except KeyError:
+        return flask.json.jsonify(error='Bad Request'), 400
 
+    for i in range(len(shots)):
+        recordShot(shots[i], times[i], dates[i])
+    return flask.json.jsonify(success='true'), 200
 
 # Fucking browsers cant use favicons right >:|
 @app.route('/favicon.ico')
@@ -130,9 +92,8 @@ def faviconGet():
     favicon = open('web-assets/images/sugar.ico', 'rb')
     return favicon.read()
 
-if not os.path.exists('db'):
-    os.mkdir('db')
-
+db = database.Database('db')
 http_server = HTTPServer(WSGIContainer(app))
 http_server.listen(3160)
+print 'Listening on port: 3160...'
 IOLoop.instance().start()
