@@ -3,6 +3,7 @@ from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 import database
+import cinfogen
 import os
 
 app = flask.Flask(__name__)
@@ -10,18 +11,20 @@ app = flask.Flask(__name__)
 
 def recordBS(bloodsugar, time='now', date='today'):
     db.addData(date, time, 'tests', bloodsugar)
+    cinfogen.updateChart(chartInfoGen, db, charttogen='all')
 
 def recordShot(shot, time='now', date='today'):
     db.addData(date, time, 'shots', shot)
+    cinfogen.updateChart(chartInfoGen, db, charttogen='all')
 
 def deleteBSfromDB(id):
     print 'Feature not implemented..(Yet!)'
 
 # Main bloodsugar graph
-#   Serves chart.js chart.
+#   Serves today.html.
 @app.route('/')
 def stracc():
-    index = open('web-assets/index.html', 'r')
+    index = open('web-assets/today.html', 'r')
     return index.read()
 
 # Serves the web-assets I need for drawing etc.
@@ -93,6 +96,7 @@ def faviconGet():
     return favicon.read()
 
 db = database.Database('db')
+chartInfoGen = cinfogen.LineChart()
 http_server = HTTPServer(WSGIContainer(app))
 http_server.listen(3160)
 print 'Listening on port: 3160...'

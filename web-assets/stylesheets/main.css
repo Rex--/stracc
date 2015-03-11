@@ -1,0 +1,48 @@
+body {
+  padding: 0px;
+  margin: 0px;
+  font-family: 'Ubuntu', sans-serif;
+}
+
+.dataInfo {
+  float: left;
+  width: 13%;
+  margin-left: 15px;
+  margin-top: 5px;
+  margin-right: 15px;
+  text-align: left;
+  white-space: pre;
+}
+
+.dataChart {
+  text-align: center;
+  float: left;
+  width: 70%;
+}
+
+.chartTitle {
+  font-weight: 700;
+  text-align: center;
+}
+
+.statsTitle {
+  font-weight: 700;
+  font-size: 18px;
+  text-align: center;
+}
+
+.color-box {
+    width: 10px;
+    height: 10px;
+    display: inline-block;
+    position: relative;
+    margin-right: 10px;
+    margin-left: 5px;
+    margin-top: 5px;
+}
+
+.color-box#average {background-color: rgba(0, 0, 255, 0.5);}
+
+.color-box#maximum {background-color: rgba(255, 0, 0, 0.5);}
+
+.color-box#minimum {background-color: rgba(0, 255, 0, 0.5);}

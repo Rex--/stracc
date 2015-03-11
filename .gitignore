@@ -2,3 +2,6 @@
 db/
 *.json
 testdb/
+Chartjs/
+requirejs/
+*_test.py
