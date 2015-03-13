@@ -108,6 +108,10 @@ def faviconGet():
 def catchAll(path):
     return fourOhFour()
 
+# TEMP FIX FOR DOCKER
+if not os.path.exists('web-assets/chart-data'):
+    os.mkdir('web-assets/chart-data')
+
 db = database.Database('db')
 chartInfoGen = cinfogen.LineChart()
 http_server = HTTPServer(WSGIContainer(app))
