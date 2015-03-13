@@ -4,20 +4,27 @@ body {
   font-family: 'Ubuntu', sans-serif;
 }
 
-.dataInfo {
+.chartMeat {
   float: left;
-  width: 13%;
-  margin-left: 15px;
-  margin-top: 5px;
-  margin-right: 15px;
-  text-align: left;
-  white-space: pre;
+  display: block-inline;
 }
 
-.dataChart {
-  text-align: center;
-  float: left;
+#chartInfo {
+  width: calc(15% - 20px);
+  margin-top: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+#chartMain {
   width: 70%;
+  text-align: center;
+}
+#chartOpts {
+  width: calc(15% - 20px);
+  margin-top: 5px;
+  margin-left: 10px;
+  margin-right: 10px;
+  text-align: center;
 }
 
 .chartTitle {
@@ -25,7 +32,7 @@ body {
   text-align: center;
 }
 
-.statsTitle {
+.chartSubTitle {
   font-weight: 700;
   font-size: 18px;
   text-align: center;

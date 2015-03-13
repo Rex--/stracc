@@ -52,14 +52,17 @@ var thisWeek = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/require
           pointDot: true,
           datasetStrokeWidth: 2,
   };
-  Chart.defaults.global.showTooltips = false;
-  var ctx = document.getElementById("DiabetesChart").getContext("2d");
+  //Chart.defaults.global.showTooltips = false;
+  var ctx = document.getElementById("chartMain").getContext("2d");
   ctx.canvas.height = window.innerHeight * 0.7;
   ctx.canvas.width = window.innerWidth * 0.7;
   var chart = new Chart(ctx).Line(data, options);
-  var disAvg = document.getElementById("weeklyAvg");
-  disAvg.innerHTML = "<hr><h2 class=\"statsTitle\"> This Week's Stats </h2><hr>";
+  var disAvg = document.getElementById("chartInfo");
+  var chartOpts = document.getElementById("chartOpts");
+  disAvg.innerHTML = "<hr><h2 class=\"chartSubTitle\"> This Week's Stats </h2><hr>";
   disAvg.innerHTML += "<p><div class=\"color-box\" id=\"maximum\"></div>Maximum: " + maxBs.toString() + "</p><hr>";
   disAvg.innerHTML += "<p><div class=\"color-box\" id=\"average\"></div>Average: " + week.chartDataAvg.toString() + "</p><hr>";
   disAvg.innerHTML += "<p><div class=\"color-box\" id=\"minimum\"></div>Minimum: " + minBs.toString() + "</p><hr>";
+  chartOpts.innerHTML = "<hr><h2 class=\"chartSubTitle\"> Chart Options </h2><hr>";
+  chartOpts.innerHTML += "<p> Coming Soon! </p><hr>";
   });

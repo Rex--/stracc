@@ -20,7 +20,11 @@ def recordShot(shot, time='now', date='today'):
 def deleteBSfromDB(id):
     print 'Feature not implemented..(Yet!)'
 
-# Main bloodsugar graph
+def fourOhFour():
+    image = open("web-assets/404.html", 'r')
+    return image.read(), 404
+
+# Root
 #   Serves today.html.
 @app.route('/')
 def stracc():
@@ -31,8 +35,12 @@ def stracc():
 @app.route('/web-assets/<path:path>')
 def webAssets(path):
     fpath = str(os.path.join('web-assets', path))
-    asset = open(fpath, 'r')
+    try:
+        asset = open(fpath, 'r')
+    except IOError:
+        return fourOhFour()
     return asset.read()
+
 
 # Gets a bloodsugar test and adds it the the database
 @app.route('/test', methods=['POST'])
@@ -94,6 +102,11 @@ def postMultipleShot():
 def faviconGet():
     favicon = open('web-assets/images/sugar.ico', 'rb')
     return favicon.read()
+
+# Catch all for pages outside of web-assets/ or that dont exist.
+@app.route('/<path:path>')
+def catchAll(path):
+    return fourOhFour()
 
 db = database.Database('db')
 chartInfoGen = cinfogen.LineChart()
