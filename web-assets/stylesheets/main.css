@@ -17,14 +17,12 @@ body {
 }
 #chartMain {
   width: 70%;
-  text-align: center;
 }
 #chartOpts {
   width: calc(15% - 20px);
   margin-top: 5px;
   margin-left: 10px;
   margin-right: 10px;
-  text-align: center;
 }
 
 .chartTitle {
@@ -53,3 +51,11 @@ body {
 .color-box#maximum {background-color: rgba(255, 0, 0, 0.5);}
 
 .color-box#minimum {background-color: rgba(0, 255, 0, 0.5);}
+
+.color-box#breakfast {background-color: rgba(210, 210, 0, 1);}
+
+.color-box#lunch {background-color: rgba(85, 107, 47, 1);}
+
+.color-box#dinner {background-color: rgba(119, 62, 5, 1);}
+
+.color-box#bedtime {background-color: rgba(0, 0, 0, 1);}

@@ -5,12 +5,13 @@
 #                    '[date - "D/M/Y"]' : {
 #                                             'dow' : [string of the day of week(Monday, etc.)],
 #                                             'doy' : [int of the day of the year],
-#                                             'tests' : {
-#                                                           '[time - "H:M:S"]' : '[data]'
-#                                                       },
-#                                             'shots' : {
-#                                                           '[time - "H:M:S"]' : '[data]'
-#                                                       }
+#                                             'breakfast' : {
+#                                                               'bloodsugar' : [int],
+#                                                               'shot': [string]
+#                                                           },
+#                                             'lunch' : {},
+#                                             'dinner' : {},
+#                                             'bedtime' : {}
 #                                         }
 #                }
 #   }
@@ -20,12 +21,13 @@ import os
 from datetime import date, datetime, timedelta
 import json
 import glob
+import sys
 
 class Database:
 
     def __init__(self, ptdb, name=None):
         self._date_format = '%d/%m/%Y'
-        self._time_format = '%H:%M:%S'
+        self._times_of_day = ['Breakfast', 'Lunch', 'Dinner', 'Bedtime']
         self._path_to_db = ptdb
         self._db_filename = self._path_to_db.split('/')[-1]
         if name != None:
@@ -98,17 +100,15 @@ class Database:
 
     # To be called if the data is not the latest or for safety
     #   This function is slower than addNewData, but is safer.
-    # date = a string of the date in format: %d/%m/%Y (ex. 05/12/2015)(or 'now')
-    # time = a string of the 24 hour time in format: %H:%M:%S (ex. 12:30:45)(or 'now')
-    # dtype = type of data (tests or shots)
+    # date = a string of the date in format: %d/%m/%Y (ex. 05/12/2015)(or 'today')
+    # timeOfDay = a string of the time of day (ex. 'Breakfast', 'Lunch', 'Dinner', 'Bedtime')
+    # dtype = type of data (test or shot)
     # data = a string of the data to be stored.
-    def addData(self, date, time, dtype, data):
+    def addData(self, date, timeOfDay, dtype, data):
         if str(date) == 'today':
             date = datetime.today().strftime(self._date_format)
-        if str(time) == 'now':
-            time = datetime.now().strftime(self._time_format)
         dateObj = datetime.strptime(date, self._date_format)
-        dataFilePath = self.__touchDataFile(date)
+        dataFilePath = self.__touchDataFile(date=date)
         dataFile = open(dataFilePath, 'r+')
         dataFileString = dataFile.read()    # Read db file
         dataFile.seek(0)    # Insert cursor at the beginning of the file
@@ -117,58 +117,67 @@ class Database:
             week['days'][date] = {
                 'dow': dateObj.strftime('%A'),
                 'doy': dateObj.strftime('%j'),
-                'tests': {},
-                'shots': {}
+                'Breakfast': {},
+                'Lunch': {},
+                'Dinner': {},
+                'Bedtime': {}
             }
-        week['days'][date][dtype][time] = data
+        week['days'][date][timeOfDay][dtype] = data
         dataFileString = json.dumps(week, indent=2)
         dataFile.write(dataFileString)
         dataFile.truncate()
         dataFile.close()
         self.__updateDB(datetime.today().strftime(self._date_format))
 
+    # removes the data in [dtype] at [time] on [date]
+    def removeData(self, date, timeOfDay, dtype):
+        dataFilePath = self.__touchDataFile(date=date)
+        dataFile = open(dataFilePath, 'r+')
+        dataFileString = dataFile.read()
+        week = json.loads(dataFileString)
+        if dtype in week['days'][date][timeOfDay]:
+            print week['days'][date][timeOfDay][dtype]
+            del week['days'][date][timeOfDay][dtype]
+        dataFile.seek(0)
+        dataFileString = json.dumps(week, indent=2)
+        dataFile.write(dataFileString)
+        dataFile.truncate()
+        self.__updateDB(datetime.today().strftime(self._date_format))
 
-    # Used to get a data point at a specific point in time
-    #   or for a full day
-    def getData(self, date='today', time='all', dtype='both'):
-        if date == 'today':
-            date = datetime.today().strftime(self._date_format)
-        dateObj = datetime.strptime(date, self._date_format)
-        dateYear = dateObj.strftime('%Y')
-        dateMonth = dateObj.strftime('%B')
-        dateWeek = dateObj.strftime('%U')
-        dataFilePath = os.path.join(self._path_to_db, dateYear, dateMonth, dateWeek + '.json')
+
+    # Used to get a specific data point at a specific point in time
+    def getData(self, date, timeOfDay, dtype):
+        dataFilePath = self.__touchDataFile(date=date)
         with open(dataFilePath, 'r') as dataFile:
             dataFileString = dataFile.read()
-            week = json.loads(dataFileString)
-        if time != 'all':
-            if dtype != 'both':
-                return week['days'][date][dtype][time]
-            else:
-                return week['days'][date]['tests'][time].extend(week['days'][date]['shots'][time])
-        elif time == 'all':
-            if dtype != 'both':
-                return week['days'][date][dtype]
-            else:
-                return week['days'][date]
-        else:
-            return 'Bad time.'
+        week = json.loads(dataFileString)
+        return week['days'][date][timeOfDay][dtype]
+
+    # Returns a dictionary corresponding to the day,
+    # if no records for the day exist it will return None
+    # A call with no arguments returns today
+    def getDay(self, date=None):
+        if date == None:
+            date = datetime.today().strftime(self._date_format)
+        dataFilePath = self.__touchDataFile(date=date)
+        with open(dataFilePath, 'r') as dataFile:
+            dataFileString = dataFile.read()
+        week = json.loads(dataFileString)
+        return week['days'][date]
+
 
     # Returns a dictionary corresponding to the week number,
     # you can also specify a specific date and it will get that week.
     # If no records for the week exists, it will create it and return an empty week.
     # A call with no arguments returns this week.
-    def getWeek(self, date=None, weekNum=None, weekYear=None):
+    def getWeek(self, weekNum=None, weekYear=None, date=None,):
         if date != None:
             dataFilePath = self.__touchDataFile(date=date)
-            dateObj = datetime.strptime(date, self._date_format)
         elif weekNum != None:
             if weekYear == None:
                 weekYear = datetime.today().strftime('%Y')
             dataFilePath = self.__touchDataFile(weekNum=weekNum, weekYear=weekYear)
-            dateObj = datetime.strptime('0'+'/'+weekNum+'/'+weekYear, '%w/%U/%Y')
         else:
-            dateObj = datetime.today()
             dataFilePath = self.__touchDataFile()
         dataFile = open(dataFilePath, 'r')
         dataFileString = dataFile.read()
@@ -192,12 +201,10 @@ class Database:
         monthFolderPath = os.path.join(self._path_to_db, dateObj.strftime('%Y'), dateObj.strftime('%B'))
         weeksInMonth = glob.glob(os.path.join(monthFolderPath, '*.json'))
         monthData = {}
-
         for week in weeksInMonth:
             weekFile = open(week, 'r')
             weekString = weekFile.read()
             monthData[week.split('/')[-1].strip('.json')] = json.loads(weekString)
-
         return monthData
 
     # returns the all time data.. may take a while and might crash...

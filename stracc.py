@@ -3,7 +3,7 @@ from tornado.wsgi import WSGIContainer
 from tornado.httpserver import HTTPServer
 from tornado.ioloop import IOLoop
 import database
-import cinfogen
+import cig
 import os
 
 app = flask.Flask(__name__)
@@ -11,14 +11,16 @@ app = flask.Flask(__name__)
 
 def recordBS(bloodsugar, time='now', date='today'):
     db.addData(date, time, 'tests', bloodsugar)
-    cinfogen.updateChart(chartInfoGen, db, charttogen='all')
+    cig.updateChart(lineChart, db, charttogen='all')
 
 def recordShot(shot, time='now', date='today'):
     db.addData(date, time, 'shots', shot)
-    cinfogen.updateChart(chartInfoGen, db, charttogen='all')
+    cig.updateChart(lineChart, db, charttogen='all')
 
-def deleteBSfromDB(id):
-    print 'Feature not implemented..(Yet!)'
+def delData(time, date, dtype):
+    db.removeData(date, time, dtype)
+    cig.updateChart(lineChart, db, charttogen='all')
+
 
 def fourOhFour():
     image = open("web-assets/404.html", 'r')
@@ -70,6 +72,17 @@ def postMultipleBloodSugar():
         recordBS(sugars[i], times[i], dates[i])
     return flask.json.jsonify(success = 'true'), 200
 
+@app.route('/test/remove', methods=['POST'])
+def removeBloodsugar():
+    try:
+        req = flask.request.get_json()
+        time = req['time']
+        date = req['date']
+    except KeyError:
+        return flask.json.jsonify(error='Bad Request'), 400
+    delData(time, date, 'tests')
+    return flask.json.jsonify(success='true'), 200
+
 # Gets a shot and adds it to the database
 @app.route('/shot', methods=['POST'])
 def postShot():
@@ -97,6 +110,17 @@ def postMultipleShot():
         recordShot(shots[i], times[i], dates[i])
     return flask.json.jsonify(success='true'), 200
 
+@app.route('/shot/remove', methods=['POST'])
+def removeShot():
+    try:
+        req = flask.request.get_json()
+        time = req['time']
+        date = req['date']
+    except KeyError:
+        return flask.json.jsonify(error='Bad Request'), 400
+    return delData(time, date, 'shots')
+
+
 # Fucking browsers cant use favicons right >:|
 @app.route('/favicon.ico')
 def faviconGet():
@@ -113,7 +137,7 @@ if not os.path.exists('web-assets/chart-data'):
     os.mkdir('web-assets/chart-data')
 
 db = database.Database('db')
-chartInfoGen = cinfogen.LineChart()
+lineChart = cig.LineChart()
 http_server = HTTPServer(WSGIContainer(app))
 http_server.listen(3160)
 print 'Listening on port: 3160...'

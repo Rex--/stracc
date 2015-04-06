@@ -1,4 +1,4 @@
-var thisWeek = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/requirejs/text.js!/web-assets/chart-data/thismonth.json"], function (Chart, monthdata) {
+var thisMonth = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/requirejs/text.js!/web-assets/chart-data/thismonth/linechart.json"], function (Chart, monthdata) {
   var month = JSON.parse(monthdata);
   var maxBs = Math.max.apply(Math, month.chartData);
   var minBs = Math.min.apply(Math, month.chartData);

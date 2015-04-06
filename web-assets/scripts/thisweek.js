@@ -1,4 +1,4 @@
-var thisWeek = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/requirejs/text.js!/web-assets/chart-data/thisweek.json"], function (Chart, weekdata) {
+var thisWeek = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/requirejs/text.js!/web-assets/chart-data/thisweek/linechart.json"], function (Chart, weekdata) {
   var week = JSON.parse(weekdata);
   var maxBs = Math.max.apply(Math, week.chartData);
   var minBs = Math.min.apply(Math, week.chartData);
@@ -59,10 +59,13 @@ var thisWeek = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/require
   var chart = new Chart(ctx).Line(data, options);
   var disAvg = document.getElementById("chartInfo");
   var chartOpts = document.getElementById("chartOpts");
+  chartOpts.innerHTML = "<hr><h2 class=\"chartSubTitle\"> Time of Day </h2><hr>";
+  chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"breakfast\"></div> Breakfast </p><hr>";
+  chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"lunch\"></div> Lunch </p><hr>";
+  chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"dinner\"></div> Dinner </p><hr>";
+  chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"bedtime\"></div> Bedtime </p>";
   disAvg.innerHTML = "<hr><h2 class=\"chartSubTitle\"> This Week's Stats </h2><hr>";
   disAvg.innerHTML += "<p><div class=\"color-box\" id=\"maximum\"></div>Maximum: " + maxBs.toString() + "</p><hr>";
   disAvg.innerHTML += "<p><div class=\"color-box\" id=\"average\"></div>Average: " + week.chartDataAvg.toString() + "</p><hr>";
   disAvg.innerHTML += "<p><div class=\"color-box\" id=\"minimum\"></div>Minimum: " + minBs.toString() + "</p><hr>";
-  chartOpts.innerHTML = "<hr><h2 class=\"chartSubTitle\"> Chart Options </h2><hr>";
-  chartOpts.innerHTML += "<p> Coming Soon! </p><hr>";
-  });
+});
