@@ -9,13 +9,17 @@ import os
 app = flask.Flask(__name__)
 
 
-def recordBS(bloodsugar, time='now', date='today'):
-    db.addData(date, time, 'tests', bloodsugar)
-    cig.updateChart(lineChart, db, charttogen='all')
+def recordBS(bloodsugar, timeOfDay, date='today'):
+    db.addData(date, timeOfDay, 'bloodsugar', bloodsugar)
+    cig.updateChart(radarChart, db, charttogen='today')
+    cig.updateChart(lineChart, db, charttogen='thisweek')
+    cig.updateChart(lineChart, db, charttogen='thismonth')
 
-def recordShot(shot, time='now', date='today'):
-    db.addData(date, time, 'shots', shot)
-    cig.updateChart(lineChart, db, charttogen='all')
+def recordShot(shot, timeOfDay, date='today'):
+    db.addData(date, timeOfDay, 'shot', shot)
+    cig.updateChart(radarChart, db, charttogen='today')
+    cig.updateChart(lineChart, db, charttogen='thisweek')
+    cig.updateChart(lineChart, db, charttogen='thismonth')
 
 def delData(time, date, dtype):
     db.removeData(date, time, dtype)
@@ -50,11 +54,11 @@ def postBloodSugar():
     try:
         req = flask.request.get_json()
         bS = req['bloodsugar']
-        time = req['time']
+        timeOfDay = req['timeofday']
         date = req['date']
     except KeyError as err:
         return flask.json.jsonify(error = "Bad request"), 400
-    recordBS(bS, time, date)
+    recordBS(bS, timeOfDay, date)
     return flask.json.jsonify(success="true"), 200
 
 # Gets multiple blood sugar test and adds each one to the db.
@@ -63,24 +67,24 @@ def postMultipleBloodSugar():
     try:
         req = flask.request.get_json()
         sugars = req['bloodsugars']
-        times = req['times']
+        timesOfDay = req['timesofday']
         dates = req['dates']
     except KeyError:
         return flask.json.jsonify(error = 'Bad request'), 400
 
     for i in range(len(sugars)):
-        recordBS(sugars[i], times[i], dates[i])
+        recordBS(sugars[i], timesOfDay[i], dates[i])
     return flask.json.jsonify(success = 'true'), 200
 
 @app.route('/test/remove', methods=['POST'])
 def removeBloodsugar():
     try:
         req = flask.request.get_json()
-        time = req['time']
+        timeOfDay = req['timeofday']
         date = req['date']
     except KeyError:
         return flask.json.jsonify(error='Bad Request'), 400
-    delData(time, date, 'tests')
+    delData(timeOfDay, date, 'bloodsugar')
     return flask.json.jsonify(success='true'), 200
 
 # Gets a shot and adds it to the database
@@ -89,11 +93,11 @@ def postShot():
     try:
         req = flask.request.get_json()
         shot = req['shot']
-        time = req['time']
+        timeOfDay = req['timeofday']
         date = req['date']
     except KeyError:
         return flask.json.jsonify(error = 'Bad Request'), 400
-    recordShot(shot, time, date)
+    recordShot(shot, timeOfDay, date)
     return flask.json.jsonify(success='true'), 200
 
 @app.route('/shot/multiple', methods=['POST'])
@@ -101,24 +105,24 @@ def postMultipleShot():
     try:
         req = flask.request.get_json()
         shots = req['shots']
-        times = req['times']
+        timesOfDay = req['timesofday']
         dates = req['dates']
     except KeyError:
         return flask.json.jsonify(error='Bad Request'), 400
 
     for i in range(len(shots)):
-        recordShot(shots[i], times[i], dates[i])
+        recordShot(shots[i], timesOfDay[i], dates[i])
     return flask.json.jsonify(success='true'), 200
 
 @app.route('/shot/remove', methods=['POST'])
 def removeShot():
     try:
         req = flask.request.get_json()
-        time = req['time']
+        timeOfDay = req['timeofday']
         date = req['date']
     except KeyError:
         return flask.json.jsonify(error='Bad Request'), 400
-    return delData(time, date, 'shots')
+    return delData(timeOfDay, date, 'shot')
 
 
 # Fucking browsers cant use favicons right >:|
@@ -132,12 +136,15 @@ def faviconGet():
 def catchAll(path):
     return fourOhFour()
 
-# TEMP FIX FOR DOCKER
 if not os.path.exists('web-assets/chart-data'):
     os.mkdir('web-assets/chart-data')
+    os.mkdir('web-assets/chart-data/today')
+    os.mkdir('web-assets/chart-data/thisweek')
+    os.mkdir('web-assets/chart-data/thismonth')
 
 db = database.Database('db')
 lineChart = cig.LineChart()
+radarChart = cig.RadarChart()
 http_server = HTTPServer(WSGIContainer(app))
 http_server.listen(3160)
 print 'Listening on port: 3160...'

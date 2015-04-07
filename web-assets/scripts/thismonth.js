@@ -1,48 +1,42 @@
 var thisMonth = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/requirejs/text.js!/web-assets/chart-data/thismonth/linechart.json"], function (Chart, monthdata) {
   var month = JSON.parse(monthdata);
-  var maxBs = Math.max.apply(Math, month.chartData);
-  var minBs = Math.min.apply(Math, month.chartData);
   var data = {
     labels: month.chartLabels,
     datasets: [
       {
-      label: "Diabetes",
-      strokeColor: 'rgb(0, 0, 0)',
-      data: month.chartData,
-      error: [],
+        label: 'Breakfast',
+        strokeColor: 'rgba(210, 210, 0, 0.8)',
+        pointColor: 'rgba(210, 210, 0, 1)',
+        pointStrokeColor: 'rgba(210, 210, 0, 0)',
+        data: month.chartData.Breakfast,
+        error: []
       },
       {
-      label: "Average",
-      strokeColor: 'rgba(0, 0, 255, 0.2)',
-      pointColor: 'rgba(0, 0, 0, 0)',
-      pointStrokeColor: 'rgba(0, 0, 0, 0)',
-      data : [],
-      error: []
+        label: 'Lunch',
+        strokeColor: 'rgba(85, 107, 47, 0.8)',
+        pointColor: 'rgba(85, 107, 47, 1)',
+        pointStrokeColor: 'rgba(85, 107, 47, 0)',
+        data: month.chartData.Lunch,
+        error: []
       },
       {
-      label: "Maximum",
-      strokeColor: 'rgba(255, 0, 0, 0.2)',
-      pointColor: 'rgba(0, 0, 0, 0)',
-      pointStrokeColor: 'rgba(0, 0, 0, 0)',
-      data: [],
-      error: []
+        label: 'Dinner',
+        strokeColor: 'rgba(119, 62, 5, 0.8',
+        pointColor: 'rgba(119, 62, 5, 1)',
+        pointStrokeColor: 'rgba(119, 62, 5, 0)',
+        data: month.chartData.Dinner,
+        error: []
       },
       {
-      label: "Minimum",
-      strokeColor: 'rgba(0, 255, 0, 0.3)',
-      pointColor: 'rgba(0, 0, 0, 0)',
-      pointStrokeColor: 'rgba(0, 0, 0, 0)',
-      data: [],
-      error: []
+        label: 'Bedtime',
+        strokeColor: 'rgba(0, 0, 0, 0.8)',
+        pointColor: 'rgba(0, 0, 0, 1)',
+        pointStrokeColor: 'rgba(0, 0, 0, 0)',
+        data: month.chartData.Bedtime,
+        error: []
       }
     ]
   };
-  dataLength = month.chartLabels.length;
-  for(var i = 0; i < dataLength; i++) {
-    data.datasets[1].data.push(month.chartDataAvg);
-    data.datasets[2].data.push(maxBs);
-    data.datasets[3].data.push(minBs);
-  }
   var options = {
           scaleBeginAtZero: false,
           scaleShowVerticalLines: true,
@@ -58,10 +52,13 @@ var thisMonth = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/requir
   var chart = new Chart(ctx).Line(data, options);
   var disAvg = document.getElementById("chartInfo");
   var chartOpts = document.getElementById("chartOpts");
+  chartOpts.innerHTML = "<hr><h2 class=\"chartSubTitle\"> Time of Day </h2><hr>";
+  chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"breakfast\"></div> Breakfast </p><hr>";
+  chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"lunch\"></div> Lunch </p><hr>";
+  chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"dinner\"></div> Dinner </p><hr>";
+  chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"bedtime\"></div> Bedtime </p>";
   disAvg.innerHTML = "<hr><h2 class=\"chartSubTitle\"> This Month's Stats </h2><hr>";
-  disAvg.innerHTML += "<p><div class=\"color-box\" id=\"maximum\"></div>Maximum: " + maxBs.toString() + "</p><hr>";
-  disAvg.innerHTML += "<p><div class=\"color-box\" id=\"average\"></div>Average: " + month.chartDataAvg.toString() + "</p><hr>";
-  disAvg.innerHTML += "<p><div class=\"color-box\" id=\"minimum\"></div>Minimum: " + minBs.toString() + "</p><hr>";
-  chartOpts.innerHTML = "<hr><h2 class=\"chartSubTitle\"> Chart Options </h2><hr>";
-  chartOpts.innerHTML += "<p> Coming soon! </p><hr>";
+  disAvg.innerHTML += "<p><div class=\"color-box\" id=\"maximum\"></div>Maximum: </p><hr>";
+  disAvg.innerHTML += "<p><div class=\"color-box\" id=\"average\"></div>Average: </p><hr>";
+  disAvg.innerHTML += "<p><div class=\"color-box\" id=\"minimum\"></div>Minimum: </p><hr>";
 });

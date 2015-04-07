@@ -6,43 +6,51 @@ var thisWeek = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/require
     labels: week.chartLabels,
     datasets: [
       {
-      label: "Diabetes",
-      strokeColor: 'rgb(0, 0, 0)',
-      data: week.chartData,
-      error: [],
-      },
-      {
       label: "Average",
       strokeColor: 'rgba(0, 0, 255, 0.2)',
-      pointColor: 'rgba(0, 0, 0, 0)',
+      pointColor: 'rgba(0, 0, 255, 0)',
       pointStrokeColor: 'rgba(0, 0, 0, 0)',
       fillColor: 'rgba(0, 0, 255, 0.5)',
       data : [],
       error: []
-      },
-      {
-      label: "Maximum",
-      strokeColor: 'rgba(255, 0, 0, 0.2)',
-      pointColor: 'rgba(0, 0, 0, 0)',
-      pointStrokeColor: 'rgba(0, 0, 0, 0)',
-      data: [],
+    },
+    {
+      label: 'Breakfast',
+      strokeColor: 'rgba(210, 210, 0, 0.8)',
+      pointColor: 'rgba(210, 210, 0, 1)',
+      pointStrokeColor: 'rgba(210, 210, 0, 0)',
+      data: week.chartData.Breakfast,
       error: []
-      },
-      {
-      label: "Minimum",
-      strokeColor: 'rgba(0, 255, 0, 0.3)',
-      pointColor: 'rgba(0, 0, 0, 0)',
-      pointStrokeColor: 'rgba(0, 0, 0, 0)',
-      data: [],
+    },
+    {
+      label: 'Lunch',
+      strokeColor: 'rgba(85, 107, 47, 0.8)',
+      pointColor: 'rgba(85, 107, 47, 1)',
+      pointStrokeColor: 'rgba(85, 107, 47, 0)',
+      data: week.chartData.Lunch,
       error: []
-      }
+    },
+    {
+      label: 'Dinner',
+      strokeColor: 'rgba(119, 62, 5, 0.8',
+      pointColor: 'rgba(119, 62, 5, 1)',
+      pointStrokeColor: 'rgba(119, 62, 5, 0)',
+      data: week.chartData.Dinner,
+      error: []
+    },
+    {
+      label: 'Bedtime',
+      strokeColor: 'rgba(0, 0, 0, 0.8)',
+      pointColor: 'rgba(0, 0, 0, 1)',
+      pointStrokeColor: 'rgba(0, 0, 0, 0)',
+      data: week.chartData.Bedtime,
+      error: []
+    }
     ]
   };
   dataLength = week.chartLabels.length;
   for(var i = 0; i < dataLength; i++) {
-    data.datasets[1].data.push(week.chartDataAvg);
-    data.datasets[2].data.push(maxBs);
-    data.datasets[3].data.push(minBs);
+    data.datasets[0].data.push(week.chartDataAvg);
   }
   var options = {
           scaleBeginAtZero: false,

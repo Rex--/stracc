@@ -3,13 +3,14 @@
 import datetime
 import json
 import os
+import calendar
 
 
 date_format = '%d/%m/%Y'
 times_of_day = ['Breakfast', 'Lunch', 'Dinner', 'Bedtime']
 chart_data_path = 'web-assets/chart-data'
 
-# chartgen can be 'today', 'thisweek', 'thismonth', 'thisyear', 'alltime', or 'all'
+# chartgen can be 'today', 'thisweek', 'thismonth', 'thisyear', or 'alltime'
 def updateChart(chart, db, charttogen='today', dtype='bloodsugar'):
     if charttogen == 'today':
         today = db.getDay()
@@ -22,15 +23,8 @@ def updateChart(chart, db, charttogen='today', dtype='bloodsugar'):
         chart.genMonth(thisMonth, os.path.join(chart_data_path, 'thismonth'), dtype=dtype)
     elif charttogen == 'thisyear':
         print 'not supported'
-    elif charttogen == 'all':
-        today = db.getToday()
-        thisWeek = db.getWeek()
-        thisMonth = db.getMonth()
-        chart.genToday(today, os.path.join(chart_data_path, 'today'), dtype=dtype)
-        chart.genWeek(thisWeek, os.path.join(chart_data_path, 'thisweek'), dtype=dtype)
-        chart.genMonth(thisMonth, os.path.join(chart_data_path, 'thismonth'), dtype=dtype)
     else:
-        print "not supported"
+        print 'Bad argument'
 
 
 class LineChart:
@@ -55,15 +49,22 @@ class LineChart:
         total = 0
         totalNums = 0
         for date in sorted(week['days'], key=lambda x: datetime.datetime.strptime(x, date_format)):
-            dateObj = datetime.datetime.strptime(date, date_format)
-            data['chartLabels'].append(dateObj.strftime('%A'))
+            data['chartLabels'].append(week['days'][date]['dow'])
+            #print 'Date:', date
             for time in times_of_day:
-                data['chartData'].append(week['days'][date][time][dtype])
-                if dtype == 'bloodsugar':
-                    total += week['days'][date][time][dtype]
+                #print '    ', time
+                try:
+                    data['chartData'][time].append(week['days'][date][time][dtype])
+                    total += int(week['days'][date][time][dtype])
                     totalNums += 1
-        if dtype == 'bloodsugar':
-            data['chartDataAvg'] = total / totalNums
+                except KeyError:
+                    data['chartData'][time].append(None)
+        if len(data['chartLabels']) < 7:
+            for _ in range(7 - len(data['chartLabels'])):
+                data['chartLabels'].append(' ')
+                for time in times_of_day:
+                    data['chartData'][time].append(None)
+        data['chartDataAvg'] = total / totalNums
 
         with open(os.path.join(path, 'linechart.json'), 'w') as chartDataFile:
             json.dump(data, chartDataFile, separators=(',',':'))
@@ -83,14 +84,25 @@ class LineChart:
         for week in sorted(month):
             for date in sorted(month[week]['days'], key=lambda x: datetime.datetime.strptime(x, date_format)):
                 dateObj = datetime.datetime.strptime(date, date_format)
-                data['chartLabels'].append(dateObj.strftime('%m/%d'))
+                data['chartLabels'].append(dateObj.strftime('%b %d'))
                 for time in times_of_day:
-                    data['chartData'].append(month[week]['days'][date][time][dtype])
-                    if dtype == 'bloodsugar':
-                        total += month[week]['days'][date][time][dtype]
+                    try:
+                        data['chartData'][time].append(month[week]['days'][date][time][dtype])
+                        total += int(month[week]['days'][date][time][dtype])
                         totalNums += 1
-        if dtype == 'bloodsugar':
-            data['chartDataAvg'] = total / totalNums
+                    except KeyError:
+                        data['chartData'][time].append(None)
+        data['chartDataAvg'] = total / totalNums
+
+        daysInMonth = calendar.monthrange(int(dateObj.strftime('%Y')), int(dateObj.strftime('%m')))[1]
+        daysInChart = len(data['chartLabels'])
+        monthString = dateObj.strftime('%m')
+        if daysInChart < daysInMonth:
+            for day in range(daysInMonth - daysInChart + 1, daysInMonth + 1, 1):
+                data['chartLabels'].append(monthString +' '+ str(day))
+                for time in times_of_day:
+                    data['chartData'][time].append(None)
+
 
         with open(os.path.join(path, 'linechart.json'), 'w') as chartDataFile:
             json.dump(data, chartDataFile, separators=(',',':'))
@@ -104,7 +116,10 @@ class RadarChart:
             'bloodsugarHigh': int
         }
         for time in times_of_day:
-            data['bloodsugarData'].append(today[time][dtype])
+            try:
+                data['bloodsugarData'].append(today[time][dtype])
+            except KeyError:
+                data['bloodsugarData'].append(None)
         data['bloodsugarHigh'] = max(data['bloodsugarData'])
 
         with open(os.path.join(path, 'radarchart.json'), 'w') as chartDataFile:
