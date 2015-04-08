@@ -96,9 +96,11 @@ class LineChart:
 
         daysInMonth = calendar.monthrange(int(dateObj.strftime('%Y')), int(dateObj.strftime('%m')))[1]
         daysInChart = len(data['chartLabels'])
-        monthString = dateObj.strftime('%m')
+        monthString = dateObj.strftime('%b')
         if daysInChart < daysInMonth:
-            for day in range(daysInMonth - daysInChart + 1, daysInMonth + 1, 1):
+            print 'Making %i days' % (daysInMonth - daysInChart)
+            for day in range(daysInChart + 1, daysInMonth + 1, 1):
+                print 'Making:', day
                 data['chartLabels'].append(monthString +' '+ str(day))
                 for time in times_of_day:
                     data['chartData'][time].append(None)

@@ -58,7 +58,5 @@ var thisMonth = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/requir
   chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"dinner\"></div> Dinner </p><hr>";
   chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"bedtime\"></div> Bedtime </p>";
   disAvg.innerHTML = "<hr><h2 class=\"chartSubTitle\"> This Month's Stats </h2><hr>";
-  disAvg.innerHTML += "<p><div class=\"color-box\" id=\"maximum\"></div>Maximum: </p><hr>";
   disAvg.innerHTML += "<p><div class=\"color-box\" id=\"average\"></div>Average: </p><hr>";
-  disAvg.innerHTML += "<p><div class=\"color-box\" id=\"minimum\"></div>Minimum: </p><hr>";
 });

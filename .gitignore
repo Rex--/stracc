@@ -2,7 +2,7 @@
 db/
 *.json
 testdb/
-Chartjs/
-requirejs/
+web-assets/Chartjs/
+web-assets/requirejs/
 *_test.py
-chart-data/
+web-assets/chart-data/

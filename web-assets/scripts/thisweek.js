@@ -1,7 +1,5 @@
 var thisWeek = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/requirejs/text.js!/web-assets/chart-data/thisweek/linechart.json"], function (Chart, weekdata) {
   var week = JSON.parse(weekdata);
-  var maxBs = Math.max.apply(Math, week.chartData);
-  var minBs = Math.min.apply(Math, week.chartData);
   var data = {
     labels: week.chartLabels,
     datasets: [
@@ -73,7 +71,5 @@ var thisWeek = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/require
   chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"dinner\"></div> Dinner </p><hr>";
   chartOpts.innerHTML += "<p><div class=\"color-box\" id=\"bedtime\"></div> Bedtime </p>";
   disAvg.innerHTML = "<hr><h2 class=\"chartSubTitle\"> This Week's Stats </h2><hr>";
-  disAvg.innerHTML += "<p><div class=\"color-box\" id=\"maximum\"></div>Maximum: " + maxBs.toString() + "</p><hr>";
   disAvg.innerHTML += "<p><div class=\"color-box\" id=\"average\"></div>Average: " + week.chartDataAvg.toString() + "</p><hr>";
-  disAvg.innerHTML += "<p><div class=\"color-box\" id=\"minimum\"></div>Minimum: " + minBs.toString() + "</p><hr>";
 });
