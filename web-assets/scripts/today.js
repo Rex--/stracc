@@ -47,8 +47,13 @@ var thisToday = require(["/web-assets/Chartjs/Chart.min.js", "/web-assets/requir
       pointLabelFontSize: 16
     };
     Chart.defaults.global.showTooltips = false;
-    var ctx = document.getElementById("DiabetesChart").getContext("2d");
+    var ctx = document.getElementById("todayChart").getContext("2d");
     ctx.canvas.height = window.innerHeight * 0.5;
     ctx.canvas.width = window.innerWidth * 0.5;
     var chart = new Chart(ctx).Radar(data, options);
+    var tInfo = document.getElementById("todayInfo");
+    tInfo.innerHTML = "<hr><h2 class=\"chartSubTitle\" id=\"breakfast\">Breakfast: " + today.bloodsugarData[0].toString() + "</h2><hr>";
+    tInfo.innerHTML += "<h2 class=\"chartSubTitle\" id=\"lunch\">Lunch: " + today.bloodsugarData[1].toString() + "</h2><hr>";
+    tInfo.innerHTML += "<h2 class=\"chartSubTitle\" id=\"dinner\">Dinner: " + today.bloodsugarData[2].toString() + "</h2><hr>";
+    tInfo.innerHTML += "<h2 class=\"chartSubTitle\" id=\"bedtime\">Bedtime: " + today.bloodsugarData[3].toString() + "</h2><hr>"; 
 });

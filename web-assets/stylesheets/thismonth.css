@@ -1,0 +1,19 @@
+.mainBody#monthChart {
+  width: 100%;
+  margin: auto;
+}
+
+.legend {
+  width: 25%;
+  display: inline-block;
+}
+
+.color-box {
+    width: 50px;
+    /*height: 10px;
+    display: inline-block;
+    position: relative;
+    margin-right: 10px;
+    margin-left: 5px;
+    margin-top: 5px;*/
+}

@@ -6,7 +6,7 @@ body {
 
 .chartMeat {
   float: left;
-  display: block-inline;
+  display: block;
 }
 
 #chartInfo {
@@ -25,6 +25,16 @@ body {
   margin-right: 10px;
 }
 
+#todayInfo {
+  width: calc(50% - 20px);
+  margin-left: 10px;
+  margin-right: 10px;
+}
+#todayChart {
+  width: 50%;
+  margin: auto;
+}
+
 .chartTitle {
   font-weight: 700;
   text-align: center;
@@ -35,6 +45,20 @@ body {
   font-size: 18px;
   text-align: center;
 }
+
+.chartSubTitle#average {color: rgb(0, 0, 255);}
+
+.chartSubTitle#maximum {color: rgb(255, 0, 0);}
+
+.chartSubTitle#minimum {color: rgb(0, 255, 0);}
+
+.chartSubTitle#breakfast {color: rgb(210, 210, 0);}
+
+.chartSubTitle#lunch {color: rgb(85, 107, 47);}
+
+.chartSubTitle#dinner {color: rgb(119, 62, 5);}
+
+.chartSubTitle#bedtime {color: rgb(0, 0, 0);}
 
 .color-box {
     width: 10px;
